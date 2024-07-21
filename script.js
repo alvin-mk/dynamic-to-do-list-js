@@ -1,38 +1,98 @@
-function addTask() {
-  const taskInput = document.getElementById('task-input');
-  const taskList = document.getElementById('task-list');
+//* Overview
+//You are tasked with developing a To-Do List application that allows users to add tasks, display them, and remove tasks. This application will utilize advanced DOM manipulation techniques.
 
-  const taskText = taskInput.value.trim();
+//Todo: Setup Event Listener for Page Load
+document.addEventListener("DOMContentLoaded", function () {
+    
+    let tasks = [];
 
-  if (taskText === '') {
-    alert('Please enter a task');
-    return;
-  }
+    //Todo: Initialize and Load Tasks
+    const storedTasks = localStorage.getItem('tasks');
 
-  const listItem = document.createElement('li');
-  listItem.textContent = taskText;
 
-  const removeButton = document.createElement('button');
-  removeButton.classList.add('remove-btn');
-  removeButton.textContent = 'Remove';
+    //Todo: Code for Loading Tasks from Local Storage
+    function loadTasks() {
 
-  removeButton.addEventListener('click', () => {
-    taskList.removeChild(listItem);
-  });
+        if (storedTasks) {
+            tasks = JSON.parse(storedTasks);
 
-  listItem.appendChild(removeButton);
-  taskList.appendChild(listItem);
-  taskInput.value = '';
-}
+            tasks.forEach(task => {
+                const listElement = document.createElement('li');
+                listElement.textContent = task;
 
-document.addEventListener('DOMContentLoaded', () => {
-  const addTaskButton = document.getElementById('add-task-btn');
+                const removeButton = document.createElement('button');
+                removeButton.textContent = "Remove";
+                removeButton.classList.add('remove-btn');
+                removeButton.onclick = () => {
+                    taskList.removeChild(listElement);
+                };
 
-  addTaskButton.addEventListener('click', addTask);
-  taskInput.addEventListener('keypress', (event) => {
-    if (event.key === 'Enter') {
-      addTask();
+                listElement.appendChild(removeButton);
+                taskList.appendChild(listElement);
+            });
+
+        }
     }
-  });
-});
 
+
+    //Todo: Select DOM Elements
+    const addButton = document.getElementById("add-task-btn");
+    const taskInput = document.getElementById("task-input");
+    const taskList = document.getElementById("task-list");
+
+
+    //Todo: Create the addTask Function
+    function addTask() {
+        const taskText = taskInput.value.trim();
+
+        if (taskText === "") {
+            alert("Enter a task!")
+            return;
+        }
+
+        //Todo: Task Creation and Removal
+        const listElement = document.createElement('li');
+        listElement.textContent = taskText;
+
+        const removeButton = document.createElement('button');
+        removeButton.textContent = "Remove";
+        removeButton.classList.add('remove-btn');
+        removeButton.onclick = () => {
+            taskList.removeChild(listElement);
+        };
+
+        listElement.appendChild(removeButton);
+        taskList.appendChild(listElement);
+
+        //Todo: Update Task Addition Functionality
+        tasks.push(taskText); // Add task to the array
+        saveTasks(); // Save tasks to Local Storage
+
+        taskInput.value = '';
+    }
+
+    //Todo: Implement Task Removal with Local Storage Update
+    function removeTask(li) {
+        const taskText = li.textContent;
+        taskList.removeChild(li);
+        tasks = tasks.filter(task => task !== taskText); // Remove task from the array
+        saveTasks(); // Save tasks to Local Storage
+    }
+
+    //Todo: Saving Tasks to Local Storage
+    function saveTasks() {
+        localStorage.setItem('tasks', JSON.stringify(tasks));
+    }
+
+
+    loadTasks(); // Load tasks on page load
+
+    //Todo: Attach Event Listeners
+    addButton.addEventListener("click", addTask);
+    taskInput.addEventListener("keypress", (event) => {
+        if (event.key == "Enter") {
+            addTask();
+        }
+    })
+
+})
